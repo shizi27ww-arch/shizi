@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍅 柿子PC28预测</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; min-height: 100vh; padding: 10px; font-size: 14px; }
+h1 { text-align: center; color: #ff6b35; font-size: 22px; margin-bottom: 5px; }
+.owner { text-align: center; color: #888; font-size: 11px; margin-bottom: 10px; }
+.owner a { color: #ff6b35; text-decoration: none; }
+.status-bar { background: rgba(15,52,96,0.8); padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 12px; }
+.live { color: #2ed573; } .dead { color: #ff4757; }
+.pred-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.pred-card { background: rgba(22,33,62,0.95); border-radius: 10px; padding: 18px 15px; text-align: center; }
+.pred-card h3 { color: #ff6b35; font-size: 13px; margin-bottom: 12px; }
+.pred-result { font-size: 56px; font-weight: bold; margin: 10px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
+.pred-result.big { color: #e74c3c; } .pred-result.small { color: #3498db; }
+.pred-result.dan { color: #9b59b6; } .pred-result.shuang { color: #1abc9c; }
+.pred-result.wait { color: #888; font-size: 28px; }
+.special-card { background: rgba(22,33,62,0.95); border-radius: 10px; padding: 15px; margin-bottom: 10px; text-align: center; }
+.special-card h3 { color: #ff6b35; font-size: 14px; margin-bottom: 12px; }
+.special-hotcold { display: flex; justify-content: center; gap: 40px; }
+.hot-num, .cold-num { display: flex; flex-direction: column; align-items: center; }
+.hot-num .label { color: #ff4757; font-size: 12px; margin-bottom: 6px; }
+.cold-num .label { color: #3498db; font-size: 12px; margin-bottom: 6px; }
+.hot-num .num { background: linear-gradient(135deg, #ff4757, #ff6b35); }
+.cold-num .num { background: linear-gradient(135deg, #3498db, #2980b9); }
+.hot-num .num, .cold-num .num { width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: #1a1a2e; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.countdown-bar { background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.3); border-radius: 10px; padding: 10px 15px; margin-bottom: 10px; text-align: center; }
+.countdown-bar .label { color: #ff6b35; font-size: 13px; }
+.countdown-bar .time { color: #ffd32a; font-weight: bold; font-size: 18px; }
+.scratch-card { background: rgba(22,33,62,0.95); border-radius: 10px; padding: 15px; margin-bottom: 10px; }
+.scratch-card h3 { color: #ff6b35; font-size: 14px; margin-bottom: 10px; text-align: center; }
+.scratch-wrap { position: relative; background: #fff; border-radius: 12px; padding: 20px; text-align: center; min-height: 140px; overflow: hidden; touch-action: none; }
+.scratch-result { position: relative; z-index: 1; color: #1a1a2e; min-height: 110px; display: flex; flex-direction: column; justify-content: center; }
+.scratch-result .raw { font-size: 28px; color: #e74c3c; font-weight: bold; }
+.scratch-result .sum { font-size: 36px; color: #e74c3c; font-weight: bold; margin: 5px 0; }
+.scratch-result .info { font-size: 14px; color: #2980b9; margin-top: 5px; }
+#scratchCanvas { position: absolute; top: 0; left: 0; z-index: 2; border-radius: 12px; cursor: grab; }
+#scratchCanvas:active { cursor: grabbing; }
+.scratch-btns { display: flex; gap: 10px; margin-top: 12px; }
+.scratch-btns button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; color: #1a1a2e; }
+.btn-show { background: linear-gradient(135deg, #2ed573, #26de81); }
+.btn-hide { background: linear-gradient(135deg, #ff6b35, #ff9f43); }
+.scratch-hint { color: #888; font-size: 11px; text-align: center; margin-top: 10px; }
+.history-card { background: rgba(22,33,62,0.95); border-radius: 10px; padding: 12px 15px; margin-bottom: 10px; }
+.history-card h3 { color: #ff6b35; font-size: 13px; margin-bottom: 8px; text-align: center; }
+.h-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; }
+.h-item.latest { background: rgba(255,107,53,0.1); padding: 5px 8px; border-radius: 4px; }
+.h-num { color: #ffd32a; font-weight: bold; }
+.h-bs { font-size: 11px; } .h-bs .b { color: #e74c3c; } .h-bs .s { color: #3498db; }
+.h-bs .d { color: #9b59b6; } .h-bs .sh { color: #1abc9c; }
+footer { text-align: center; color: #555; font-size: 10px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<h1>🍅 柿子PC28预测</h1>
+<div class="owner">主人 <a href="https://t.me/Persimmon57" target="_blank">@Persimmon57</a></div>
+<div class="status-bar"><span id="connStatus" class="dead">● 连接中...</span><span id="roundInfo">--</span></div>
+<div class="pred-grid">
+  <div class="pred-card"><h3>🎯 大小</h3><div class="pred-result" id="predBigSmall">--</div></div>
+  <div class="pred-card"><h3>🎯 单双</h3><div class="pred-result" id="predDanShuang">--</div></div>
+</div>
+<div class="special-card">
+  <h3>🎯 特码</h3>
+  <div class="special-hotcold">
+    <div class="hot-num"><div class="label">🔥 热推</div><div class="num" id="specialHot">--</div></div>
+    <div class="cold-num"><div class="label">❄️ 冷推</div><div class="num" id="specialCold">--</div></div>
+  </div>
+</div>
+<div class="countdown-bar"><span class="label">⏰ 距下期开奖：</span><span class="time" id="countdown">--分--秒</span></div>
+<div class="scratch-card">
+  <h3>🎫 刮开看最新开奖</h3>
+  <div class="scratch-wrap" id="scratchWrap">
+    <div class="scratch-result" id="scratchResult"><div style="color:#999;font-size:14px">加载中...</div></div>
+    <canvas id="scratchCanvas"></canvas>
+  </div>
+  <div class="scratch-btns">
+    <button class="btn-show" onclick="showResult()">👁 显示</button>
+    <button class="btn-hide" onclick="hideResult()">🫣 咪牌</button>
+  </div>
+  <div class="scratch-hint">👆 刮开 · 显示/咪牌手动控制</div>
+</div>
+<div class="history-card"><h3>📜 近20期走势</h3><div id="historyList"><div style="color:#888;text-align:center;padding:10px;font-size:12px">加载中...</div></div></div>
+<footer>版权归柿子所有 · 每5秒同步接口</footer>
+
+<script>
+const API_URL = 'https://pc28.help/api/kj.json?nbr=20';
+const INTERVAL = 180000;
+let history = [];
+let nextDrawTime = 0;
+let hasData = false;
+let canvas, ctx;
+const SPECIAL_ODDS = {0:1000,27:1000,1:320,26:320,2:160,25:160,3:95,24:95,4:62,23:62,5:42,22:42,6:35,21:35,7:27,20:27,8:22,19:22,9:18,18:18,10:15.7,17:15.7,11:14.4,16:14.4,12:13.1,15:13.1,13:13.1,14:13.1};
+
+function initScratch() {
+  const wrap = document.getElementById('scratchWrap');
+  canvas = document.getElementById('scratchCanvas');
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = rect.width; canvas.height = rect.height;
+  ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  grad.addColorStop(0,'#95a5a6'); grad.addColorStop(0.5,'#7f8c8d'); grad.addColorStop(1,'#95a5a6');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#ecf0f1'; ctx.font = 'bold 16px Microsoft YaHei'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('👆 刮开查看', canvas.width/2, canvas.height/2 - 8);
+  ctx.font = '13px Microsoft YaHei'; ctx.fillText('最新开奖结果', canvas.width/2, canvas.height/2 + 12);
+  for (let i=0;i<3000;i++){ ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.12})`; ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2); }
+  canvas.style.opacity='1'; canvas.style.pointerEvents='auto';
+  let drawing=false;
+  const getPos=e=>{const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};};
+  canvas.onmousedown=e=>{drawing=true;const p=getPos(e);ctx.globalCompositeOperation='destination-out';ctx.lineWidth=45;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.onmousemove=e=>{if(!drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();};
+  canvas.onmouseup=()=>drawing=false; canvas.onmouseleave=()=>drawing=false;
+  canvas.ontouchstart=e=>{e.preventDefault();drawing=true;const p=getPos(e.touches[0]);ctx.globalCompositeOperation='destination-out';ctx.lineWidth=45;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const p=getPos(e.touches[0]);ctx.lineTo(p.x,p.y);ctx.stroke();};
+  canvas.ontouchend=()=>drawing=false;
+}
+function showResult(){ if(!canvas)return; canvas.style.opacity='0'; canvas.style.pointerEvents='none'; }
+function hideResult(){ initScratch(); }
+function updateScratchResult(){
+  if(history.length===0)return;
+  const latest=history[history.length-1];
+  document.getElementById('scratchResult').innerHTML=`<div class="raw">${latest.raw}</div><div class="sum">= ${latest.sum}</div><div class="info">${latest.big?'大':'小'} · ${latest.sum%2===1?'单':'双'}</div>`;
+  if(!canvas) initScratch();
+}
+function calcSum(raw){return raw.split('+').reduce((s,n)=>s+parseInt(n),0);}
+function isBig(n){return n>=14;}
+
+function voteBigSmall(recent){
+  if(recent.length<3) return {result:'wait'};
+  const bigCount=recent.filter(h=>h.big).length;
+  const last5=recent.slice(-5); const last5Big=last5.filter(h=>h.big).length;
+  let votes={big:0,small:0};
+  if(last5Big>=3) votes.big+=2.5; else votes.small+=2.5;
+  const last3=recent.slice(-3); const last3Big=last3.filter(h=>h.big).length;
+  if(last3Big===3&&recent.length>=4){ if(recent.slice(-4).filter(h=>h.big).length===4) votes.small+=2.0; }
+  if(last3Big===0&&recent.length>=4){ if(recent.slice(-4).filter(h=>h.big).length===0) votes.big+=2.0; }
+  if(bigCount>=8) votes.small+=1.5;
+  if(bigCount<=2&&recent.length>=10) votes.big+=1.5;
+  const lastSum=recent[recent.length-1].sum;
+  const exp=(lastSum%3+lastSum%4+lastSum%5)%2===0?14:13;
+  if(exp>=14) votes.big+=1.5; else votes.small+=1.5;
+  const sumCount={}; for(const h of recent) sumCount[h.sum]=(sumCount[h.sum]||0)+1;
+  const hot=Object.entries(sumCount).sort((a,b)=>b[1]-a[1])[0];
+  if(hot&&hot[1]>=3){ if(parseInt(hot[0])>=14) votes.big+=2.5; else votes.small+=2.5; }
+  let bigStreak=0; for(let i=recent.length-1;i>=0;i--){ if(recent[i].big) bigStreak++; else break; }
+  let smallStreak=0; for(let i=recent.length-1;i>=0;i--){ if(!recent[i].big) smallStreak++; else break; }
+  if(bigStreak>=6) votes.small+=4; else if(bigStreak>=5) votes.small+=3; else if(bigStreak>=4) votes.small+=2;
+  if(smallStreak>=6) votes.big+=4; else if(smallStreak>=5) votes.big+=3; else if(smallStreak>=4) votes.big+=2;
+  if(votes.big===votes.small) return {result: recent[recent.length-1].big?'大':'小'};
+  return {result: votes.big>votes.small?'大':'小'};
+}
+
+function voteDanShuang(recent){
+  if(recent.length<3) return {result:'wait'};
+  const danCount=recent.filter(h=>h.sum%2===1).length;
+  const last5=recent.slice(-5); const last5Dan=last5.filter(h=>h.sum%2===1).length;
+  let votes={dan:0,shuang:0};
+  if(last5Dan>=3) votes.dan+=2.5; else votes.shuang+=2.5;
+  const last3=recent.slice(-3); const last3Dan=last3.filter(h=>h.sum%2===1).length;
+  if(last3Dan===3&&recent.length>=4){ if(recent.slice(-4).filter(h=>h.sum%2===1).length===4) votes.shuang+=2.0; }
+  if(last3Dan===0&&recent.length>=4){ if(recent.slice(-4).filter(h=>h.sum%2===1).length===0) votes.dan+=2.0; }
+  if(danCount>=8) votes.shuang+=1.5;
+  if(danCount<=2&&recent.length>=10) votes.dan+=1.5;
+  const lastSum=recent[recent.length-1].sum;
+  if(lastSum%2===1) votes.dan+=1.5; else votes.shuang+=1.5;
+  const sumCount={}; for(const h of recent) sumCount[h.sum]=(sumCount[h.sum]||0)+1;
+  const hot=Object.entries(sumCount).sort((a,b)=>b[1]-a[1])[0];
+  if(hot&&hot[1]>=3){ if(parseInt(hot[0])%2===1) votes.dan+=2.5; else votes.shuang+=2.5; }
+  let danStreak=0; for(let i=recent.length-1;i>=0;i--){ if(recent[i].sum%2===1) danStreak++; else break; }
+  let shuangStreak=0; for(let i=recent.length-1;i>=0;i--){ if(recent[i].sum%2===0) shuangStreak++; else break; }
+  if(danStreak>=6) votes.shuang+=4; else if(danStreak>=5) votes.shuang+=3; else if(danStreak>=4) votes.shuang+=2;
+  if(shuangStreak>=6) votes.dan+=4; else if(shuangStreak>=5) votes.dan+=3; else if(shuangStreak>=4) votes.dan+=2;
+  if(votes.dan===votes.shuang) return {result: recent[recent.length-1].sum%2===1?'单':'双'};
+  return {result: votes.dan>votes.shuang?'单':'双'};
+}
+
+function predictSpecial(recent, bigSmall, danShuang){
+  if(recent.length<3) return {hot:'--',cold:'--'};
+  let candidates=[];
+  for(let i=0;i<=27;i++){
+    const isBigNum=i>=14, isDan=i%2===1;
+    if(bigSmall==='大'&&!isBigNum) continue;
+    if(bigSmall==='小'&&isBigNum) continue;
+    if(danShuang==='单'&&!isDan) continue;
+    if(danShuang==='双'&&isDan) continue;
+    candidates.push(i);
+  }
+  if(candidates.length===0) return {hot:'--',cold:'--'};
+  const countMap={}; for(const n of candidates) countMap[n]=0;
+  for(const h of recent) if(candidates.includes(h.sum)) countMap[h.sum]++;
+  let hot=candidates[0]; for(const n of candidates) if(countMap[n]>countMap[hot]) hot=n;
+  const neverOut=candidates.filter(n=>countMap[n]===0);
+  let cold;
+  if(neverOut.length>0) cold=neverOut.reduce((a,b)=>SPECIAL_ODDS[a]>SPECIAL_ODDS[b]?a:b);
+  else { cold=candidates[0]; for(const n of candidates) if(countMap[n]<countMap[cold]) cold=n; if(cold===hot){ const mc=Math.min(...candidates.map(n=>countMap[n])); const cl=candidates.filter(n=>countMap[n]===mc&&n!==hot); cold=cl.length?cl[0]:candidates.find(n=>n!==hot); } }
+  return {hot, cold};
+}
+
+function renderPrediction(){
+  if(history.length<1) return;
+  const recent=history.slice(-20);
+  const bs=voteBigSmall(recent);
+  const bsEl=document.getElementById('predBigSmall');
+  if(bs.result==='wait'){ bsEl.className='pred-result wait'; bsEl.textContent='⏸'; }
+  else { bsEl.className=`pred-result ${bs.result==='大'?'big':'small'}`; bsEl.textContent=bs.result; }
+  const ds=voteDanShuang(recent);
+  const dsEl=document.getElementById('predDanShuang');
+  if(ds.result==='wait'){ dsEl.className='pred-result wait'; dsEl.textContent='⏸'; }
+  else { dsEl.className=`pred-result ${ds.result==='单'?'dan':'shuang'}`; dsEl.textContent=ds.result; }
+  const special=predictSpecial(recent, bs.result, ds.result);
+  document.getElementById('specialHot').textContent=special.hot;
+  document.getElementById('specialCold').textContent=special.cold;
+}
+
+function renderHistory(){
+  const el=document.getElementById('historyList');
+  if(history.length===0){el.innerHTML='<div style="color:#888;text-align:center;padding:10px;font-size:12px">暂无数据</div>';return;}
+  let html='';
+  for(let i=history.length-1;i>=0;i--){
+    const h=history[i]; const isLatest=i===history.length-1;
+    html+=`<div class="h-item ${isLatest?'latest':''}"><span>${h.time}</span><span class="h-num">${h.raw}=${h.sum}</span><span class="h-bs"><span class="${h.big?'b':'s'}">${h.big?'大':'小'}</span> <span class="${h.sum%2===1?'d':'sh'}">${h.sum%2===1?'单':'双'}</span></span></div>`;
+  }
+  el.innerHTML=html;
+}
+function parseTime(t){const d=new Date();const[h,m]=t.split(':').map(Number);return new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m,0).getTime();}
+function updateCountdown(){
+  if(nextDrawTime===0){document.getElementById('countdown').textContent='--分--秒';return;}
+  const diff=nextDrawTime-Date.now();
+  if(diff<=0){document.getElementById('countdown').textContent='开奖中...';return;}
+  const m=Math.floor(diff/60000), s=Math.floor((diff%60000)/1000);
+  document.getElementById('countdown').textContent=`${m.toString().padStart(2,'0')}分${s.toString().padStart(2,'0')}秒`;
+}
+async function fetchData(){
+  try{
+    const res=await fetch(API_URL,{cache:'no-cache'});
+    if(!res.ok) throw new Error();
+    const json=await res.json();
+    if(json.message!=='success'||!json.data) throw new Error();
+    const reversed=[...json.data].reverse();
+    const old=history.length?history[history.length-1]:null;
+    history=reversed.map(it=>{const sum=calcSum(it.number);return{raw:it.number,sum,big:isBig(sum),time:it.time};});
+    hasData=true;
+    document.getElementById('connStatus').innerHTML='<span class="live">● 已同步</span>';
+    const latest=history[history.length-1];
+    nextDrawTime=parseTime(latest.time)+INTERVAL;
+    document.getElementById('roundInfo').textContent=`第${history.length}期 · ${latest.time}`;
+    if(!old||old.raw!==latest.raw||old.time!==latest.time) updateScratchResult();
+    renderPrediction(); renderHistory();
+  }catch(e){ if(!hasData) document.getElementById('connStatus').innerHTML='<span class="dead">● 连接失败</span>'; }
+}
+fetchData();
+setInterval(fetchData,5000);
+setInterval(updateCountdown,1000);
+window.onresize=()=>{ if(canvas) initScratch(); };
+</script>
+</body>
+</html>
